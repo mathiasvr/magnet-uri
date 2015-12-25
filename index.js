@@ -6,6 +6,14 @@ var base32 = require('thirty-two')
 var extend = require('xtend')
 var uniq = require('uniq')
 
+var qs = require('querystring')
+var filter = require('object-filter')
+
+qs.escape = function (s) {
+  console.log('escaping', s)
+  return s.startsWith('urn:') ? s : encodeURIComponent(s).replace(/%20/g, '+')
+}
+
 /**
  * Parse a magnet URI and return an object of keys/values
  *
@@ -104,26 +112,9 @@ function magnetURIEncode (obj) {
     delete obj.as
   }
 
-  var result = 'magnet:?'
-  Object.keys(obj)
-    .filter(function (key) {
-      return key.length === 2
-    })
-    .forEach(function (key, i) {
-      var values = Array.isArray(obj[key]) ? obj[key] : [ obj[key] ]
-      values.forEach(function (val, j) {
-        if ((i > 0 || j > 0) && (key !== 'kt' || j === 0)) result += '&'
+  if (obj.kt) obj.kt = obj.kt.join(' ')
 
-        if (key === 'dn') val = encodeURIComponent(val).replace(/%20/g, '+')
-        if (key === 'tr' || key === 'xs' || key === 'as' || key === 'ws') {
-          val = encodeURIComponent(val)
-        }
-        if (key === 'kt') val = encodeURIComponent(val)
-
-        if (key === 'kt' && j > 0) result += '+' + val
-        else result += key + '=' + val
-      })
-    })
-
-  return result
+  return 'magnet:?' + qs.stringify(filter(obj, function (val, key) {
+    return key.length === 2
+  }))
 }
