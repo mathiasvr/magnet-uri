@@ -63,19 +63,18 @@ function magnetURIDecode (uri) {
   })
 
   // Convenience properties for parity with `parse-torrent-file` module
-  var m
   if (result.xt) {
+    var m
     var xts = Array.isArray(result.xt) ? result.xt : [ result.xt ]
     xts.forEach(function (xt) {
       if ((m = xt.match(/^urn:btih:(.{40})/))) {
-        result.infoHash = m[1].toLowerCase()
+        result.infoHashBuffer = new Buffer(m[1], 'hex')
       } else if ((m = xt.match(/^urn:btih:(.{32})/))) {
-        var decodedStr = base32.decode(m[1])
-        result.infoHash = new Buffer(decodedStr, 'binary').toString('hex')
+        result.infoHashBuffer = base32.decode(m[1])
       }
     })
   }
-  if (result.infoHash) result.infoHashBuffer = new Buffer(result.infoHash, 'hex')
+  if (result.infoHashBuffer) result.infoHash = result.infoHashBuffer.toString('hex')
 
   if (result.dn) result.name = result.dn
   if (result.kt) result.keywords = result.kt
