@@ -65,7 +65,7 @@ test('decode: invalid magnet URIs return only valid keys (ignoring invalid ones)
 })
 
 test('decode: extracts 40-char hex BitTorrent info_hash', function (t) {
-  var result = magnet('magnet:?xt=urn:btih:aad050ee1bb22e196939547b134535824dabf0ce')
+  var result = magnet('magnet:?xt=urn:btih:AAD050EE1BB22E196939547B134535824DABF0CE')
   t.equal(result.infoHash, 'aad050ee1bb22e196939547b134535824dabf0ce')
   t.end()
 })
